@@ -1,12 +1,19 @@
 'use client';
 
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useRef, useState } from 'react';
 import { useChat } from '@ai-sdk/react';
 import { getToolName, isToolUIPart } from 'ai';
 
 export default function Home() {
     const { messages, sendMessage } = useChat();
     const [input, setInput] = useState('');
+    const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const container = scrollContainerRef.current;
+        if (!container) return;
+        container.scrollTop = container.scrollHeight;
+    }, [messages]);
 
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -26,7 +33,7 @@ export default function Home() {
                     <div className="text-white font-semibold">在输入框中输下问题吧！</div>
                 </div>
 
-                <div className='w-full flex-1 overflow-y-auto scrollbar-hide items-start px-4'>
+                <div ref={scrollContainerRef} className='w-full flex-1 overflow-y-auto scrollbar-hide items-start px-4'>
                     {messages.length === 0 ? (
                         <div className='w-full mt-4 text-gray-400 flex items-center justify-center'>
                             向我提问吧！😊
