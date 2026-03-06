@@ -19,8 +19,8 @@ export default function Home() {
 
     return (
         <div className='bg-slate-100 flex items-center justify-center w-screen h-screen'>
-            <div className="relative bg-white flex flex-col items-center w-full h-[90%] -mt-16 max-w-2xl  mx-auto stretch rounded-xl shadow-lg overflow-hidden">
-                <div className=' w-full pt-6 px-6 pb-4 border-b border-gray-300 rounded-t-2xl shadow-md bg-sky-400'>
+            <div className="relative bg-white flex flex-col items-center w-full h-full max-w-2xl mx-auto stretch shadow-lg overflow-hidden">
+                <div className=' w-full pt-6 px-6 pb-4 border-b border-gray-300 bg-sky-400'>
                     <h1 className="text-3xl text-white font-bold mb-2 text-shadow-lg">李嘉星的个人 AI Agent</h1>
                     <div className="text-white font-semibold">试试询问他南京的天气怎么样？</div>
                     <div className="text-white font-semibold">在输入框中输下问题吧！</div>
@@ -93,12 +93,23 @@ export default function Home() {
 
 
                 <form onSubmit={handleSubmit} className="absolute bg-gray-50 bottom-4 left-4 right-4 rounded-2xl p-2 border-2 border-gray-200 shadow-xl">
-                    <input
-                        className="w-full p-1 outline-none"
-                        value={input}
-                        placeholder="问问南京的天气..."
-                        onChange={(event) => setInput(event.target.value)}
-                    />
+                    <div className="flex items-center gap-2">
+                        <input
+                            className="flex-1 p-1 outline-none bg-transparent"
+                            value={input}
+                            placeholder="问问南京的天气..."
+                            onChange={(event) => setInput(event.target.value)}
+                        />
+                        <button
+                            type="submit"
+                            disabled={!input.trim()}
+                            className="shrink-0 px-4 py-1 rounded-xl bg-sky-500 text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed shadow-2xl border-2 border-sky-700"
+                            aria-label="发送"
+                            title="发送"
+                        >
+                            发送↵
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>
