@@ -19,14 +19,19 @@ export default function Home() {
 
     return (
         <div className='bg-slate-100 flex items-center justify-center w-screen h-screen'>
-            <div className="bg-white flex flex-col items-center w-full h-[90%] -mt-16 max-w-2xl  mx-auto stretch rounded-xl shadow-lg overflow-hidden">
-                <div className=' w-full p-6 border-b border-gray-300 rounded-t-2xl shadow-md bg-sky-400'>
-                    <h1 className="text-3xl text-white font-bold mb-4 text-shadow-lg">李嘉星的个人 AI Agent</h1>
-                    <div className="text-white font-semibold">试试问问南京的天气怎么样？</div>
-                    <div className="text-white font-semibold">在输入框输下问题吧！</div>
+            <div className="relative bg-white flex flex-col items-center w-full h-[90%] -mt-16 max-w-2xl  mx-auto stretch rounded-xl shadow-lg overflow-hidden">
+                <div className=' w-full pt-6 px-6 pb-4 border-b border-gray-300 rounded-t-2xl shadow-md bg-sky-400'>
+                    <h1 className="text-3xl text-white font-bold mb-2 text-shadow-lg">李嘉星的个人 AI Agent</h1>
+                    <div className="text-white font-semibold">试试询问他南京的天气怎么样？</div>
+                    <div className="text-white font-semibold">在输入框中输下问题吧！</div>
                 </div>
 
                 <div className='w-full flex-1 overflow-y-auto scrollbar-hide items-start px-4'>
+                    {messages.length === 0 ? (
+                        <div className='w-full mt-4 text-gray-400 flex items-center justify-center'>
+                            向我提问吧！😊
+                        </div>
+                    ) : null}
                     <div className="flex-1 items-start w-full mb-4 mt-4">
                         {messages.map((m) => (
                             <div key={m.id} className={`flex items-start gap-2 mb-4 ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
@@ -87,7 +92,7 @@ export default function Home() {
                 </div>
 
 
-                <form onSubmit={handleSubmit} className="fixed bg-gray-50 bottom-16 w-[28%] rounded-2xl p-2 mb-8 border-2 border-gray-200 shadow-xl">
+                <form onSubmit={handleSubmit} className="absolute bg-gray-50 bottom-4 left-4 right-4 rounded-2xl p-2 border-2 border-gray-200 shadow-xl">
                     <input
                         className="w-full p-1 outline-none"
                         value={input}
