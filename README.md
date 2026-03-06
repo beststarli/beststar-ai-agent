@@ -89,4 +89,4 @@ curl -sS -X POST http://localhost:3000/api/chat \
 2) 在 [lib/skills/index.ts](lib/skills/index.ts) 导出它。
 3) 在 [app/api/chat/route.ts](app/api/chat/route.ts) 的 `tools` 对象里注册（例如新增 `myTool: myToolImpl`）。
 
-（可选）如果你想在 UI 中显示更友好的技能名称，可以在 [app/page.tsx](app/page.tsx) 里对 `toolName` 做映射展示。
+如果你想在 UI 中显示更友好的技能名称，可以在 [app/page.tsx](app/page.tsx) 里对 `toolName` 做映射展示。
