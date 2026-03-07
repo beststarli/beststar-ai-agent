@@ -1,4 +1,3 @@
-// lib/skills/search.ts
 import { jsonSchema, tool } from 'ai';
 
 export function createSearchTool(tavilyApiKey?: string) {

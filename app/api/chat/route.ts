@@ -1,4 +1,3 @@
-// app/api/chat/route.ts
 import { createOpenAI } from '@ai-sdk/openai';
 import { convertToModelMessages, stepCountIs, streamText, UIMessage } from 'ai';
 import { createSearchTool, weatherTool } from '@/lib/skills';
