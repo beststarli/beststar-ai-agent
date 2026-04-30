@@ -3,14 +3,28 @@
 import { FormEvent, useEffect, useRef, useState } from 'react';
 import { useChat } from '@ai-sdk/react';
 import { getToolName, isToolUIPart } from 'ai';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 
 export default function Home() {
     const [deepThinkingEnabled, setDeepThinkingEnabled] = useState(true);
     const [webSearchEnabled, setWebSearchEnabled] = useState(true);
-    const { messages, sendMessage } = useChat();
+    const { messages, sendMessage, status } = useChat();
     const [input, setInput] = useState('');
     const scrollContainerRef = useRef<HTMLDivElement>(null);
-    const activeModel = deepThinkingEnabled ? 'deepseek-reasoner' : 'deepseek-chat';
+    const [selectedModel, setSelectedModel] = useState<'deepseek' | 'deepseek-v4'>('deepseek');
+    const [v4Tier, setV4Tier] = useState<'flash' | 'pro'>('flash');
+    const activeModel = selectedModel === 'deepseek'
+        ? (deepThinkingEnabled ? 'deepseek-reasoner' : 'deepseek-chat')
+        : (v4Tier === 'pro' ? 'deepseek-v4-pro' : 'deepseek-v4-flash');
+    const isAssistantLoading = status === 'submitted' || status === 'streaming';
+    const lastMessage = messages[messages.length - 1];
+    const shouldShowLoading = isAssistantLoading && lastMessage?.role === 'user';
 
     useEffect(() => {
         const container = scrollContainerRef.current;
@@ -119,22 +133,63 @@ export default function Home() {
                                     )}
                                 </div>
                             ))}
+
+                            {shouldShowLoading && (
+                                <div className="flex items-start gap-3">
+                                    <div className="mt-2 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sky-500 text-lg font-semibold text-white shadow-lg shadow-sky-500/25">
+                                        AI
+                                    </div>
+                                    <div className="mt-2 max-w-[78%] rounded-3xl rounded-tr-2xl rounded-bl-md bg-sky-200 px-4 py-3 shadow-lg dark:bg-sky-950/60">
+                                        <div className="flex items-center gap-2">
+                                            <div className="flex gap-1">
+                                                <div className="h-2 w-2 animate-bounce rounded-full bg-sky-600 dark:bg-sky-300" style={{ animationDelay: '0s' }} />
+                                                <div className="h-2 w-2 animate-bounce rounded-full bg-sky-600 dark:bg-sky-300" style={{ animationDelay: '0.2s' }} />
+                                                <div className="h-2 w-2 animate-bounce rounded-full bg-sky-600 dark:bg-sky-300" style={{ animationDelay: '0.4s' }} />
+                                            </div>
+                                            <span className="text-sm font-medium text-sky-700 dark:text-sky-200">
+                                                {deepThinkingEnabled ? '深度思考中...' : '生成回复中...'}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
 
                     <div className=" bg-white/90 px-6 pb-4 backdrop-blur-md dark:border-slate-700/70 dark:bg-slate-900/90">
                         <form onSubmit={handleSubmit} className="rounded-2xl border border-slate-200/80 bg-white/95 px-4 py-4 shadow-[0_10px_30px_rgba(15,23,42,0.06)] backdrop-blur-md dark:border-slate-700/70 dark:bg-slate-900/90">
                             <div className="mb-3 flex flex-wrap items-center gap-2">
-                                <button
-                                    type="button"
-                                    onClick={() => setDeepThinkingEnabled((current) => !current)}
-                                    className={`inline-flex items-center gap-2 rounded-full border px-3.5 py-2 text-sm font-semibold transition ${deepThinkingEnabled ? 'border-sky-500 bg-sky-500/10 text-sky-700 dark:border-sky-400 dark:bg-sky-500/20 dark:text-sky-200' : 'border-slate-200 bg-white text-slate-500 dark:border-slate-700 dark:bg-slate-950/60 dark:text-slate-400'}`}
-                                    aria-pressed={deepThinkingEnabled}
-                                    aria-label="切换深度思考"
-                                >
-                                    <span className={`h-2.5 w-2.5 rounded-full ${deepThinkingEnabled ? 'bg-sky-500 dark:bg-sky-400' : 'bg-slate-300 dark:bg-slate-600'}`} />
-                                    深度思考
-                                </button>
+                                {selectedModel === 'deepseek' ? (
+                                    <button
+                                        type="button"
+                                        onClick={() => setDeepThinkingEnabled((current) => !current)}
+                                        className={`inline-flex items-center gap-2 rounded-full border px-3.5 py-2 text-sm font-semibold transition ${deepThinkingEnabled ? 'border-sky-500 bg-sky-500/10 text-sky-700 dark:border-sky-400 dark:bg-sky-500/20 dark:text-sky-200' : 'border-slate-200 bg-white text-slate-500 dark:border-slate-700 dark:bg-slate-950/60 dark:text-slate-400'}`}
+                                        aria-pressed={deepThinkingEnabled}
+                                        aria-label="切换深度思考"
+                                    >
+                                        <span className={`h-2.5 w-2.5 rounded-full ${deepThinkingEnabled ? 'bg-sky-500 dark:bg-sky-400' : 'bg-slate-300 dark:bg-slate-600'}`} />
+                                        深度思考
+                                    </button>
+                                ) : (
+                                    <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3.5 py-2 text-sm font-semibold text-slate-600 dark:border-slate-700 dark:bg-slate-950/60 dark:text-slate-300">
+                                        <span className="text-xs uppercase tracking-[0.2em] text-slate-400">V4</span>
+                                        <Select
+                                            value={v4Tier}
+                                            onValueChange={(value) => setV4Tier(value as 'flash' | 'pro')}
+                                        >
+                                            <SelectTrigger
+                                                className="h-auto border-0 bg-transparent px-0 py-0 text-sm font-semibold shadow-none focus:ring-0"
+                                                aria-label="切换 DeepSeek V4 版本"
+                                            >
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="flash">Flash</SelectItem>
+                                                <SelectItem value="pro">Pro</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                )}
 
                                 <button
                                     type="button"
@@ -148,7 +203,7 @@ export default function Home() {
                                 </button>
 
                                 <div className="ml-auto text-xs font-medium text-slate-400 dark:text-slate-500">
-                                    当前模型: {deepThinkingEnabled ? activeModel : 'deepseek-chat'}
+                                    当前模型: {activeModel}
                                 </div>
                             </div>
 
@@ -185,7 +240,18 @@ export default function Home() {
                     <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-800/70">
                         <div className="text-sm font-semibold text-slate-700 dark:text-slate-200">当前模型</div>
                         <div className="mt-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100">
-                            {activeModel === 'deepseek-reasoner' ? 'DeepSeek Reasoner' : 'DeepSeek Chat'}
+                            <Select
+                                value={selectedModel}
+                                onValueChange={(value) => setSelectedModel(value as 'deepseek' | 'deepseek-v4')}
+                            >
+                                <SelectTrigger className="h-auto w-full border-0 bg-transparent px-0 py-0 text-sm font-semibold shadow-none focus:ring-0">
+                                    <SelectValue aria-label="选择模型" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="deepseek">DeepSeek</SelectItem>
+                                    <SelectItem value="deepseek-v4">DeepSeek-v4</SelectItem>
+                                </SelectContent>
+                            </Select>
                         </div>
                     </div>
 

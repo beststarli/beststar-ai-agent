@@ -16,7 +16,7 @@ export async function POST(req: Request) {
     });
 
     const { messages, model, webSearchEnabled }: { messages: UIMessage[]; model?: string; webSearchEnabled?: boolean } = await req.json();
-    const selectedModel = model === 'deepseek-reasoner' ? 'deepseek-reasoner' : 'deepseek-chat';
+    const selectedModel = model && typeof model === 'string' ? model : 'deepseek-chat';
 
     const tools = {
         getWeather: weatherTool,
