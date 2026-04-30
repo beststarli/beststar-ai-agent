@@ -77,7 +77,7 @@ export default function Home() {
                                         </div>
                                     )}
 
-                                    <div className={`mt-2 max-w-[78%] whitespace-pre-wrap rounded-3xl px-4 py-3 shadow-lg ${m.role === 'user' ? 'rounded-tl-2xl rounded-br-md bg-slate-100 text-slate-900 dark:bg-slate-700/80 dark:text-slate-100' : 'rounded-tr-2xl rounded-bl-md bg-sky-200 text-slate-900 dark:bg-sky-950/60 dark:text-slate-100'}`}>
+                                    <div className={`mt-2 max-w-[78%] whitespace-pre-wrap rounded-3xl px-4 py-3 shadow-lg ${m.role === 'user' ? 'rounded-tl-2xl rounded-tr-sm rounded-b-2xl bg-slate-200/80 text-slate-900 dark:bg-slate-700/80 dark:text-slate-100' : 'rounded-tl-sm rounded-tr-2xl rounded-b-2xl bg-sky-200 text-slate-900 dark:bg-sky-950/60 dark:text-slate-100'}`}>
                                         {m.parts.some((part) => isToolUIPart(part)) ? (
                                             <div className="mb-2 flex flex-wrap gap-2 border-b border-sky-200/70 pb-2 text-[11px] font-semibold text-sky-700 dark:border-sky-500/20 dark:text-sky-300">
                                                 {m.parts.map((part) => {
@@ -157,13 +157,13 @@ export default function Home() {
                     </div>
 
                     <div className=" bg-white/90 px-6 pb-4 backdrop-blur-md dark:border-slate-700/70 dark:bg-slate-900/90">
-                        <form onSubmit={handleSubmit} className="rounded-2xl border border-slate-200/80 bg-white/95 px-4 py-4 shadow-[0_10px_30px_rgba(15,23,42,0.06)] backdrop-blur-md dark:border-slate-700/70 dark:bg-slate-900/90">
+                        <form onSubmit={handleSubmit} className="rounded-2xl border border-slate-200/50 bg-white/95 px-4 py-4 shadow-[0_10px_30px_rgba(15,23,42,0.06)] backdrop-blur-md dark:border-slate-700/70 dark:bg-slate-900/90">
                             <div className="mb-3 flex flex-wrap items-center gap-2">
                                 {selectedModel === 'deepseek' ? (
                                     <button
                                         type="button"
                                         onClick={() => setDeepThinkingEnabled((current) => !current)}
-                                        className={`inline-flex items-center gap-2 rounded-full border px-3.5 py-2 text-sm font-semibold transition ${deepThinkingEnabled ? 'border-sky-500 bg-sky-500/10 text-sky-700 dark:border-sky-400 dark:bg-sky-500/20 dark:text-sky-200' : 'border-slate-200 bg-white text-slate-500 dark:border-slate-700 dark:bg-slate-950/60 dark:text-slate-400'}`}
+                                        className={`inline-flex h-10 items-center gap-2 rounded-full border px-3.5 text-sm font-semibold transition ${deepThinkingEnabled ? 'border-sky-500 bg-sky-500/10 text-sky-700 dark:border-sky-400 dark:bg-sky-500/20 dark:text-sky-200' : 'border-slate-200 bg-white text-slate-500 dark:border-slate-700 dark:bg-slate-950/60 dark:text-slate-400'}`}
                                         aria-pressed={deepThinkingEnabled}
                                         aria-label="切换深度思考"
                                     >
@@ -171,14 +171,14 @@ export default function Home() {
                                         深度思考
                                     </button>
                                 ) : (
-                                    <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3.5 py-2 text-sm font-semibold text-slate-600 dark:border-slate-700 dark:bg-slate-950/60 dark:text-slate-300">
+                                    <div className="inline-flex h-10 items-center gap-2 rounded-full border border-slate-200 bg-white px-3.5 text-sm font-semibold text-slate-600 dark:border-slate-700 dark:bg-slate-950/60 dark:text-slate-300">
                                         <span className="text-xs uppercase tracking-[0.2em] text-slate-400">V4</span>
                                         <Select
                                             value={v4Tier}
                                             onValueChange={(value) => setV4Tier(value as 'flash' | 'pro')}
                                         >
                                             <SelectTrigger
-                                                className="h-auto border-0 bg-transparent px-0 py-0 text-sm font-semibold shadow-none focus:ring-0"
+                                                className="h-10 border-0 bg-transparent px-0 py-0 text-sm font-semibold shadow-none focus:ring-0"
                                                 aria-label="切换 DeepSeek V4 版本"
                                             >
                                                 <SelectValue />
@@ -207,7 +207,7 @@ export default function Home() {
                                 </div>
                             </div>
 
-                            <div className="flex items-center gap-2 rounded-[22px] border border-slate-200/90 bg-white/95 px-4 py-2 dark:border-slate-700/70 dark:bg-slate-800">
+                            <div className="flex items-center gap-2 rounded-md border border-slate-200/90 bg-white/95 px-4 py-2 dark:border-slate-700/70 dark:bg-slate-800">
                                 <input
                                     className="min-w-0 flex-1 bg-transparent text-base outline-none placeholder:text-slate-400 dark:placeholder:text-slate-500"
                                     value={input}
@@ -228,7 +228,7 @@ export default function Home() {
                     </div>
                 </section>
 
-                <aside className="flex min-h-60 flex-col gap-4 rounded-4xl border border-slate-200/80 bg-white/95 p-5 shadow-xl backdrop-blur dark:border-slate-700/60 dark:bg-slate-900/88">
+                <aside className="flex min-h-60 flex-col gap-4 rounded-2xl border border-slate-200/80 bg-white/95 p-5 shadow-xl backdrop-blur dark:border-slate-700/60 dark:bg-slate-900/88">
                     <div>
                         <div className="text-sm font-semibold uppercase tracking-[0.28em] text-sky-500 dark:text-sky-400">Control Panel</div>
                         <h2 className="mt-2 text-2xl font-bold text-slate-900 dark:text-slate-100">模型控制</h2>
