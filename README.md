@@ -12,10 +12,27 @@
   - `webSearch`：联网搜索（基于 Tavily，返回精简摘要与链接）
 
 ## 技术栈
-- 前端：Next.js + React + TailwindCSS
-- 对话能力：Vercel AI SDK（`ai`、`@ai-sdk/react`）
-- 大模型：DeepSeek（OpenAI-compatible）
-- 联网搜索：Tavily
+- 前端（UI 与交互层）
+	- Next.js App Router（页面与路由）
+	- React（组件开发）
+	- TailwindCSS（样式系统）
+	- `@ai-sdk/react`（对话状态管理与流式渲染，核心是 `useChat()`）
+- 后端（API 与业务编排层）
+	- Next.js Route Handler（`app/api/chat/route.ts`）
+	- TypeScript（服务端逻辑与类型约束）
+	- Skills/Tools 执行层（`lib/skills/*`，封装天气查询与联网搜索）
+- AI 编排层（LLM 调用抽象）
+	- Vercel AI SDK（`ai`）
+	- 说明：它不属于模型本身，而是“AI 应用开发框架/中间层”，负责消息格式、流式输出、工具调用（tool calling）等能力编排
+- 大模型（LLM Provider）
+	- DeepSeek Chat Model（通过 OpenAI-compatible 接口接入）
+	- 环境变量：`DEEPSEEK_API_KEY`
+- 外部能力服务
+	- Tavily Search API（联网搜索）
+	- 环境变量：`TAVILY_API_KEY`
+- 工程化与运行环境
+	- Node.js 18+
+	- npm / pnpm / yarn
 
 ## 环境准备
 - Node.js（建议 18+）

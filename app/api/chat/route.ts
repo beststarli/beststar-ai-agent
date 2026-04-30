@@ -15,16 +15,16 @@ export async function POST(req: Request) {
         apiKey: deepseekApiKey,
     });
 
-    const { messages }: { messages: UIMessage[] } = await req.json();
-    const searchTool = createSearchTool(tavilyApiKey);
+    const { messages, model, webSearchEnabled }: { messages: UIMessage[]; model?: string; webSearchEnabled?: boolean } = await req.json();
+    const selectedModel = model === 'deepseek-reasoner' ? 'deepseek-reasoner' : 'deepseek-chat';
 
     const tools = {
         getWeather: weatherTool,
-        webSearch: searchTool,
+        ...(webSearchEnabled ? { webSearch: createSearchTool(tavilyApiKey) } : {}),
     };
 
     const result = streamText({
-        model: deepseek.chat('deepseek-chat'),
+        model: deepseek.chat(selectedModel),
         messages: await convertToModelMessages(messages, { tools }),
         tools,
         stopWhen: stepCountIs(5),
