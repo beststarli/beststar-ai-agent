@@ -10,18 +10,21 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { ModelId } from '@/model/types';
+import { modelOptions, getActiveModel } from '@/model';
 
 export default function Home() {
-    const [deepThinkingEnabled, setDeepThinkingEnabled] = useState(true);
+    // const [deepThinkingEnabled, setDeepThinkingEnabled] = useState(true);
     const [webSearchEnabled, setWebSearchEnabled] = useState(true);
     const { messages, sendMessage, status } = useChat();
     const [input, setInput] = useState('');
     const scrollContainerRef = useRef<HTMLDivElement>(null);
-    const [selectedModel, setSelectedModel] = useState<'deepseek' | 'deepseek-v4'>('deepseek');
-    const [v4Tier, setV4Tier] = useState<'flash' | 'pro'>('flash');
-    const activeModel = selectedModel === 'deepseek'
-        ? (deepThinkingEnabled ? 'deepseek-reasoner' : 'deepseek-chat')
-        : (v4Tier === 'pro' ? 'deepseek-v4-pro' : 'deepseek-v4-flash');
+    const [selectedModel, setSelectedModel] = useState<ModelId>('deepseek-v4');
+    const [v4Tier, setV4Tier] = useState('flash');
+
+    const currentModelConfig = modelOptions.find((m) => m.id === selectedModel);
+    // const activeModel = getActiveModel(selectedModel, deepThinkingEnabled, v4Tier);
+    const activeModel = getActiveModel(selectedModel, v4Tier);
     const isAssistantLoading = status === 'submitted' || status === 'streaming';
     const lastMessage = messages[messages.length - 1];
     const shouldShowLoading = isAssistantLoading && lastMessage?.role === 'user';
@@ -44,16 +47,16 @@ export default function Home() {
             body: {
                 model: activeModel,
                 webSearchEnabled,
-                deepThinkingEnabled,
+                // deepThinkingEnabled,
             },
         });
     };
 
     return (
-        <div className="h-screen bg-slate-100 px-4 py-4 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
-            <div className="mx-auto grid h-[calc(100vh-2rem)] w-full max-w-7xl gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
-                <section className="flex min-h-[calc(100vh-2rem)] flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white/95 shadow-2xl backdrop-blur dark:border-slate-700/60 dark:bg-slate-900/92">
-                    <div className="w-full border-b border-white/20 bg-linear-to-r from-sky-500 via-cyan-500 to-sky-400 px-6 py-5 text-white  dark:from-sky-500 dark:via-cyan-400 dark:to-cyan-500 dark:shadow-[0_16px_40px_rgba(2,132,199,0.22)]">
+        <div className="app-shell h-screen bg-slate-100 px-4 py-4 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
+            <div className="chat-grid mx-auto grid h-[calc(100vh-2rem)] w-full max-w-7xl gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
+                <section className="chat-panel flex min-h-[calc(100vh-2rem)] flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white/95 shadow-2xl backdrop-blur dark:border-slate-700/60 dark:bg-slate-900/92">
+                    <div className="chat-header w-full border-b border-white/20 bg-linear-to-r from-sky-500 via-cyan-500 to-sky-400 px-6 py-5 text-white  dark:from-sky-500 dark:via-cyan-400 dark:to-cyan-500 dark:shadow-[0_16px_40px_rgba(2,132,199,0.22)]">
                         <h1 className="mb-2 text-3xl font-bold tracking-tight">
                             李嘉星的个人 AI Agent
                         </h1>
@@ -61,7 +64,7 @@ export default function Home() {
                         <div className="text-sm font-medium text-white/90">在输入框中输下问题吧！</div>
                     </div>
 
-                    <div ref={scrollContainerRef} className="flex-1 overflow-y-auto scrollbar-hide px-4 py-5">
+                    <div ref={scrollContainerRef} className="chat-scroll flex-1 overflow-y-auto scrollbar-hide px-4 py-5">
                         {messages.length === 0 ? (
                             <div className="mt-4 flex items-center justify-center text-sm text-slate-400 dark:text-slate-500">
                                 向我提问吧！😊
@@ -139,7 +142,7 @@ export default function Home() {
                                     <div className="mt-2 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sky-500 text-lg font-semibold text-white shadow-lg shadow-sky-500/25">
                                         AI
                                     </div>
-                                    <div className="mt-2 max-w-[78%] rounded-3xl rounded-tr-2xl rounded-bl-md bg-sky-200 px-4 py-3 shadow-lg dark:bg-sky-950/60">
+                                    <div className="mt-2 max-w-[78%] rounded-tl-sm rounded-tr-2xl rounded-b-2xl bg-sky-200 px-4 py-3 shadow-lg dark:bg-sky-950/60">
                                         <div className="flex items-center gap-2">
                                             <div className="flex gap-1">
                                                 <div className="h-2 w-2 animate-bounce rounded-full bg-sky-600 dark:bg-sky-300" style={{ animationDelay: '0s' }} />
@@ -147,7 +150,7 @@ export default function Home() {
                                                 <div className="h-2 w-2 animate-bounce rounded-full bg-sky-600 dark:bg-sky-300" style={{ animationDelay: '0.4s' }} />
                                             </div>
                                             <span className="text-sm font-medium text-sky-700 dark:text-sky-200">
-                                                {deepThinkingEnabled ? '深度思考中...' : '生成回复中...'}
+                                                {v4Tier === 'pro' ? '深度思考中...' : '生成回复中...'}
                                             </span>
                                         </div>
                                     </div>
@@ -156,10 +159,30 @@ export default function Home() {
                         </div>
                     </div>
 
-                    <div className=" bg-white/90 px-6 pb-4 backdrop-blur-md dark:border-slate-700/70 dark:bg-slate-900/90">
+                    <div className="chat-form bg-white/90 px-6 pb-4 backdrop-blur-md dark:border-slate-700/70 dark:bg-slate-900/90">
                         <form onSubmit={handleSubmit} className="rounded-2xl border border-slate-200/50 bg-white/95 px-4 py-4 shadow-[0_10px_30px_rgba(15,23,42,0.06)] backdrop-blur-md dark:border-slate-700/70 dark:bg-slate-900/90">
-                            <div className="mb-3 flex flex-wrap items-center gap-2">
-                                {selectedModel === 'deepseek' ? (
+                            <div className="composer-row mb-3 flex flex-wrap items-center gap-2">
+                                {/* {currentModelConfig?.tiers ? (
+                                    <div className="inline-flex h-10 items-center gap-2 rounded-full border border-slate-200 bg-white px-3.5 text-sm font-semibold text-slate-600 dark:border-slate-700 dark:bg-slate-950/60 dark:text-slate-300">
+                                        <span className="text-xs uppercase tracking-[0.2em] text-slate-400">V4</span>
+                                        <Select
+                                            value={v4Tier}
+                                            onValueChange={(value) => setV4Tier(value)}
+                                        >
+                                            <SelectTrigger
+                                                className="h-10 border-0 bg-transparent px-0 py-0 text-sm font-semibold shadow-none focus:ring-0"
+                                                aria-label={`切换 ${currentModelConfig.name} 版本`}
+                                            >
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {currentModelConfig.tiers.map((tier) => (
+                                                    <SelectItem key={tier.id} value={tier.id}>{tier.name}</SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                ) : (
                                     <button
                                         type="button"
                                         onClick={() => setDeepThinkingEnabled((current) => !current)}
@@ -170,27 +193,28 @@ export default function Home() {
                                         <span className={`h-2.5 w-2.5 rounded-full ${deepThinkingEnabled ? 'bg-sky-500 dark:bg-sky-400' : 'bg-slate-300 dark:bg-slate-600'}`} />
                                         深度思考
                                     </button>
-                                ) : (
+                                )} */}
+                                {currentModelConfig && (
                                     <div className="inline-flex h-10 items-center gap-2 rounded-full border border-slate-200 bg-white px-3.5 text-sm font-semibold text-slate-600 dark:border-slate-700 dark:bg-slate-950/60 dark:text-slate-300">
                                         <span className="text-xs uppercase tracking-[0.2em] text-slate-400">V4</span>
                                         <Select
                                             value={v4Tier}
-                                            onValueChange={(value) => setV4Tier(value as 'flash' | 'pro')}
+                                            onValueChange={(value) => setV4Tier(value)}
                                         >
                                             <SelectTrigger
                                                 className="h-10 border-0 bg-transparent px-0 py-0 text-sm font-semibold shadow-none focus:ring-0"
-                                                aria-label="切换 DeepSeek V4 版本"
+                                                aria-label={`切换 ${currentModelConfig.name} 版本`}
                                             >
                                                 <SelectValue />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value="flash">Flash</SelectItem>
-                                                <SelectItem value="pro">Pro</SelectItem>
+                                                {currentModelConfig.tiers?.map((tier) => (
+                                                    <SelectItem key={tier.id} value={tier.id}>{tier.name}</SelectItem>
+                                                ))}
                                             </SelectContent>
                                         </Select>
                                     </div>
                                 )}
-
                                 <button
                                     type="button"
                                     onClick={() => setWebSearchEnabled((current) => !current)}
@@ -207,7 +231,7 @@ export default function Home() {
                                 </div>
                             </div>
 
-                            <div className="flex items-center gap-2 rounded-md border border-slate-200/90 bg-white/95 px-4 py-2 dark:border-slate-700/70 dark:bg-slate-800">
+                            <div className="composer-input flex items-center gap-2 rounded-md border border-slate-200/90 bg-white/95 px-4 py-2 dark:border-slate-700/70 dark:bg-slate-800">
                                 <input
                                     className="min-w-0 flex-1 bg-transparent text-base outline-none placeholder:text-slate-400 dark:placeholder:text-slate-500"
                                     value={input}
@@ -228,7 +252,7 @@ export default function Home() {
                     </div>
                 </section>
 
-                <aside className="flex min-h-60 flex-col gap-4 rounded-2xl border border-slate-200/80 bg-white/95 p-5 shadow-xl backdrop-blur dark:border-slate-700/60 dark:bg-slate-900/88">
+                <aside className="side-panel flex min-h-60 flex-col gap-4 rounded-2xl border border-slate-200/80 bg-white/95 p-5 shadow-xl backdrop-blur dark:border-slate-700/60 dark:bg-slate-900/88">
                     <div>
                         <div className="text-sm font-semibold uppercase tracking-[0.28em] text-sky-500 dark:text-sky-400">Control Panel</div>
                         <h2 className="mt-2 text-2xl font-bold text-slate-900 dark:text-slate-100">模型控制</h2>
@@ -242,14 +266,15 @@ export default function Home() {
                         <div className="mt-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100">
                             <Select
                                 value={selectedModel}
-                                onValueChange={(value) => setSelectedModel(value as 'deepseek' | 'deepseek-v4')}
+                                onValueChange={(value) => setSelectedModel(value as ModelId)}
                             >
                                 <SelectTrigger className="h-auto w-full border-0 bg-transparent px-0 py-0 text-sm font-semibold shadow-none focus:ring-0">
                                     <SelectValue aria-label="选择模型" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="deepseek">DeepSeek</SelectItem>
-                                    <SelectItem value="deepseek-v4">DeepSeek-v4</SelectItem>
+                                    {modelOptions.map((model) => (
+                                        <SelectItem key={model.id} value={model.id}>{model.name}</SelectItem>
+                                    ))}
                                 </SelectContent>
                             </Select>
                         </div>
