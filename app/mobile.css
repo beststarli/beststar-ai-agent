@@ -1,41 +1,49 @@
+/* Mobile: edge-to-edge layout, no padding/radius/border */
 @media (max-width: 430px) {
   .app-shell {
+    padding: 0 !important;
     height: 100svh;
-    padding: 0.75rem;
   }
 
   .chat-grid {
-    grid-template-columns: 1fr;
-    height: calc(100svh - 1.5rem);
+    gap: 0 !important;
+    height: 100svh;
   }
 
   .chat-panel {
-    min-height: 62svh;
-  }
-
-  .side-panel {
-    order: 2;
-    border-radius: 1.25rem;
-    padding: 1rem;
+    border: none !important;
+    border-radius: 0 !important;
+    min-height: 100svh;
   }
 
   .chat-header {
-    padding: 1rem 1.25rem;
-  }
-
-  .chat-scroll {
+    border-radius: 0;
     padding: 0.75rem 1rem;
   }
 
+  .chat-scroll {
+    padding: 0.5rem 0.75rem;
+  }
+
   .chat-form {
-    padding: 1rem 1rem calc(1rem + env(safe-area-inset-bottom));
+    padding: 0 0.75rem 0.5rem 0.75rem;
   }
 
+  /* Allow horizontal scroll if buttons overflow on very small screens */
   .composer-row {
-    gap: 0.5rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
   }
+  .composer-row::-webkit-scrollbar {
+    display: none;
+  }
+}
 
-  .composer-input {
-    border-radius: 1rem;
+/* Slightly wider mobile/tablet adjustments */
+@media (max-width: 768px) {
+  .chat-header h1 {
+    font-size: 1.5rem;
+    line-height: 1.3;
   }
 }
